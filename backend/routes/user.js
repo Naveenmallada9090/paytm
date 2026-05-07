@@ -2,23 +2,23 @@ const express = require('express');
 
 const router = express.Router();
 const zod = require("zod");
-const { User } = require("../db");
+const { User, Account } = require("../db");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../config");
-const { authMiddleware } = require("../middleware");
+const JWT_SECRET = require("../config");
+const  { authMiddleware } = require("../middleware");
 
 const signupBody = zod.object({
     username: zod.string().email(),
-	firstName: zod.string(),
-	lastName: zod.string(),
-	password: zod.string()
+	firstName: zod.string().min(1).max(50).trim(),
+	lastName: zod.string().min(1).max(50).trim(),
+	password: zod.string().min(6)
 })
 
 router.post("/signup", async (req, res) => {
     const { success } = signupBody.safeParse(req.body)
     if (!success) {
         return res.status(411).json({
-            message: "Email already taken / Incorrect inputs"
+            message: "Incorrect inputs"
         })
     }
 
@@ -28,7 +28,7 @@ router.post("/signup", async (req, res) => {
 
     if (existingUser) {
         return res.status(411).json({
-            message: "Email already taken/Incorrect inputs"
+            message: "Email already taken"
         })
     }
 
@@ -40,6 +40,11 @@ router.post("/signup", async (req, res) => {
     })
     const userId = user._id;
 
+    await Account.create({
+        userId,
+        balance: 10000
+    })
+
     const token = jwt.sign({
         userId
     }, JWT_SECRET);
@@ -50,16 +55,17 @@ router.post("/signup", async (req, res) => {
     })
 })
 
+
 const signinBody = zod.object({
     username: zod.string().email(),
-	password: zod.string()
+	password: zod.string().min(1)
 })
 
 router.post("/signin", async (req, res) => {
     const { success } = signinBody.safeParse(req.body)
     if (!success) {
         return res.status(411).json({
-            message: "Email already taken / Incorrect inputs"
+            message: "Incorrect inputs"
         })
     }
 
@@ -79,9 +85,57 @@ router.post("/signin", async (req, res) => {
         return;
     }
 
-    
+
     res.status(411).json({
-        message: "Error while logging in"
+        message: "Invalid credentials"
+    })
+})
+
+const updateBody = zod.object({
+	password: zod.string().optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional(),
+})
+
+router.put("/", authMiddleware, async (req, res) => {
+    const { success } = updateBody.safeParse(req.body)
+    if (!success) {
+        res.status(411).json({
+            message: "Error while updating information"
+        })
+    }
+
+    await User.updateOne(req.body, {
+        id: req.userId
+    })
+
+    res.json({
+        message: "Updated successfully"
+    })
+})
+
+router.get("/bulk", async (req, res) => {
+    const filter = req.query.filter || "";
+
+    const users = await User.find({
+        $or: [{
+            firstName: {
+                "$regex": filter
+            }
+        }, {
+            lastName: {
+                "$regex": filter
+            }
+        }]
+    })
+
+    res.json({
+        user: users.map(user => ({
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            _id: user._id
+        }))
     })
 })
 
