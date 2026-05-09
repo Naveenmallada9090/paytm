@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Heading } from "../assets/components/Heading";
+import { Heading } from "../assets/components/heading";
 import { Button } from "../assets/components/Button";
 
 export const HelpSupport = () => {

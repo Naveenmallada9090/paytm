@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Heading } from "../assets/components/Heading";
+import { Heading } from "../assets/components/heading";
 import { SubHeading } from "../assets/components/SubHeading";
 import { InputBox } from "../assets/components/InputBox";
 import { Button } from "../assets/components/Button";

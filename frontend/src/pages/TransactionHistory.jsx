@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Heading } from "../assets/components/Heading";
+import { Heading } from "../assets/components/heading";
 import { Button } from "../assets/components/Button";
 
 export const TransactionHistory = () => {

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BottomWarning } from "../assets/components/BottomWarning"
 import { Button } from "../assets/components/Button"
-import { Heading } from "../assets/components/Heading"
+import { Heading } from "../assets/components/heading"
 import { InputBox } from "../assets/components/InputBox"
 import { SubHeading } from "../assets/components/SubHeading"
 import { Signup } from "./Signup";
