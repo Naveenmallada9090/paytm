@@ -10,7 +10,7 @@ export const Dashboard = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get("http://localhost:3000/api/v1/account/balance", {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/v1/account/balance`, {
             headers: {
                 Authorization: "Bearer " + localStorage.getItem("token")
             }

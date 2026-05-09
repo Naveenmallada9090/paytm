@@ -9,7 +9,7 @@ export const TransactionHistory = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get("http://localhost:3000/api/v1/account/transactions", {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/v1/account/transactions`, {
             headers: {
                 Authorization: "Bearer " + localStorage.getItem("token")
             }
