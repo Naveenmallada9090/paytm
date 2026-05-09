@@ -1,14 +1,14 @@
 
 const express = require('express');
 const { authMiddleware } = require('../middleware');
-const { Account, User } = require('../db');
+const { Account, User, Transaction } = require('../db');
 const { default: mongoose } = require('mongoose');
 const zod = require("zod");
 
 const router = express.Router();
 
 const transferBody = zod.object({
-    to: zod.string().email(),
+    to: zod.string(),
     amount: zod.number().positive()
 });
 
@@ -71,9 +71,35 @@ router.post("/transfer", authMiddleware, async (req, res) => {
     await Account.updateOne({ userId: req.userId }, { $inc: { balance: -amount } }).session(session);
     await Account.updateOne({ userId: toUser._id }, { $inc: { balance: amount } }).session(session);
 
+    // Create transaction records
+    await Transaction.create([
+        {
+            userId: req.userId,
+            toUserId: toUser._id,
+            amount,
+            type: 'transfer'
+        },
+        {
+            userId: toUser._id,
+            toUserId: req.userId,
+            amount,
+            type: 'receive'
+        }
+    ], { session });
+
     await session.commitTransaction();
     res.json({
         message: "Transfer successful"
+    });
+});
+
+router.get("/transactions", authMiddleware, async (req, res) => {
+    const transactions = await Transaction.find({
+        userId: req.userId
+    }).sort({ timestamp: -1 });
+
+    res.json({
+        transactions
     });
 });
 

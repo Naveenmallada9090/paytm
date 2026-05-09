@@ -1,6 +1,10 @@
 import { useSearchParams } from 'react-router-dom';
 import axios from "axios";
 import { useState } from 'react';
+import { Heading } from '../assets/components/heading';
+import { SubHeading } from '../assets/components/SubHeading';
+import { InputBox } from '../assets/components/InputBox';
+import { Button } from '../assets/components/Button';
 
 export const SendMoney = () => {
     const [searchParams] = useSearchParams();
@@ -8,81 +12,69 @@ export const SendMoney = () => {
     const name = searchParams.get("name");
     const [amount, setAmount] = useState("");
 
-    return <div className="flex justify-center h-screen bg-gray-100">
-        <div className="h-full flex flex-col justify-center">
-            <div
-                className="border h-min text-card-foreground max-w-md p-4 space-y-8 w-96 bg-white shadow-lg rounded-lg"
-            >
-                <div className="flex flex-col space-y-1.5 p-6">
-                <h2 className="text-3xl font-bold text-center">Send Money</h2>
+    const handleTransfer = () => {
+        console.log("recipientUsername:", recipientUsername, "amount:", amount);
+        if (!recipientUsername) {
+            alert("Recipient not found");
+            return;
+        }
+        if (!amount) {
+            alert("Amount is required");
+            return;
+        }
+        const numAmount = parseFloat(amount);
+        if (isNaN(numAmount)) {
+            alert("Amount must be a valid number");
+            return;
+        }
+        if (numAmount <= 0) {
+            alert("Amount must be positive");
+            return;
+        }
+        axios.post("http://localhost:3000/api/v1/account/transfer", {
+            to: recipientUsername,
+            amount: numAmount
+        }, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+                "Content-Type": "application/json"
+            }
+        })
+        .then(() => {
+            alert("Transfer successful");
+        })
+        .catch((error) => {
+            console.error(error);
+            alert("Transfer failed: " + (error.response?.data?.message || error.message));
+        });
+    };
+
+    return (
+        <div className="flex justify-center items-center min-h-screen bg-slate-50 p-4">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-8">
+                <div className="text-center space-y-2">
+                    <Heading label="Send Money" />
+                    <SubHeading label="Transfer funds securely to your contact" />
                 </div>
-                <div className="p-6">
-                <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
-                    <span className="text-2xl text-white">{name ? name[0].toUpperCase() : 'U'}</span>
+
+                <div className="flex flex-col items-center justify-center space-y-3">
+                    <div className="w-20 h-20 rounded-full bg-emerald-500 flex items-center justify-center shadow-md">
+                        <span className="text-3xl font-bold text-white">
+                            {name ? name[0].toUpperCase() : 'U'}
+                        </span>
                     </div>
-                    <h3 className="text-2xl font-semibold">{name}</h3>
+                    <h3 className="text-xl font-semibold text-slate-700">{name}</h3>
                 </div>
-                <div className="space-y-4">
-                    <div className="space-y-2">
-                    <label
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        htmlFor="amount"
-                    >
-                        Amount (in Rs)
-                    </label>
-                     <input
-                         onChange={(e) => {
-                             setAmount(e.target.value);
-                         }}
-                         value={amount}
-                         type="number"
-                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                         id="amount"
-                         placeholder="Enter amount"
-                     />
-                    </div>
-                    <button onClick={() => {
-                        console.log("recipientUsername:", recipientUsername, "amount:", amount);
-                        if (!recipientUsername) {
-                            alert("Recipient not found");
-                            return;
-                        }
-                        if (!amount) {
-                            alert("Amount is required");
-                            return;
-                        }
-                        const numAmount = parseFloat(amount);
-                        if (isNaN(numAmount)) {
-                            alert("Amount must be a valid number");
-                            return;
-                        }
-                        if (numAmount <= 0) {
-                            alert("Amount must be positive");
-                            return;
-                        }
-                        axios.post("http://localhost:3000/api/v1/account/transfer", {
-                            to: recipientUsername,
-                            amount: numAmount
-                        }, {
-                            headers: {
-                                Authorization: "Bearer " + localStorage.getItem("token"),
-                                "Content-Type": "application/json"
-                            }
-                        })
-                        .then(() => {
-                            alert("Transfer successful");
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                            alert("Transfer failed: " + error.response?.data?.message || error.message);
-                        });
-                    }} className="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
-                        Initiate Transfer
-                    </button>
+
+                <div className="space-y-6">
+                    <InputBox
+                        label="Amount (in Rs)"
+                        placeholder="0.00"
+                        onChange={(e) => setAmount(e.target.value)}
+                    />
+                    <Button label="Initiate Transfer" onClick={handleTransfer} />
                 </div>
-                </div>
+            </div>
         </div>
-      </div>
-    </div>
+    );
 }
