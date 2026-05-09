@@ -3,12 +3,12 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
-import { Signup } from "./pages/signup";
-import { Signin } from "./pages/signin";
+import { Signup } from "./pages/Signup";
+import { Signin } from "./pages/Signin";
 import { Dashboard } from "./pages/dashboard";
-import { SendMoney } from "./pages/sendmoney";
-import { TransactionHistory } from "./pages/transactionhistory";
-import { ProfileSettings } from "./pages/profilesettings";
+import { SendMoney } from "./pages/SendMoney";
+import { TransactionHistory } from "./pages/TransactionHistory";
+import { ProfileSettings } from "./pages/ProfileSettings";
 import { HelpSupport } from "./pages/HelpSupport";
 
 function App() {
