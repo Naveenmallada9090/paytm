@@ -9,6 +9,7 @@ import { Dashboard } from "./pages/dashboard";
 import { SendMoney } from "./pages/SendMoney";
 import { TransactionHistory } from "./pages/TransactionHistory";
 import { ProfileSettings } from "./pages/ProfileSettings";
+
 import { HelpSupport } from "./pages/HelpSupport";
 
 function App() {
