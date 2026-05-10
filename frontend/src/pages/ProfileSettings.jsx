@@ -14,7 +14,7 @@ export const ProfileSettings = () => {
 
     const handleUpdate = async () => {
         try {
-            await axios.put(`${import.meta.env.VITE_API_URL}/api/v1/user/`, {
+            await axios.put("https://paytm-1-wh6a.onrender.com/api/v1/user/", {
                 firstName,
                 lastName,
                 password

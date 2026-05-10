@@ -37,7 +37,7 @@ export const Signup = () => {
                 </div>
                 <div className="pt-2">
                     <Button onClick={async () => {
-                        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/signup`, {
+                        const response = await axios.post("https://paytm-1-wh6a.onrender.com/api/v1/user/signup", {
                             username,
                             firstName,
                             lastName,

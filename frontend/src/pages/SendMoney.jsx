@@ -31,7 +31,7 @@ export const SendMoney = () => {
             alert("Amount must be positive");
             return;
         }
-        axios.post(`${import.meta.env.VITE_API_URL}/api/v1/account/transfer`, {
+        axios.post("https://paytm-1-wh6a.onrender.com/api/v1/account/transfer", {
             to: recipientUsername,
             amount: numAmount
         }, {
