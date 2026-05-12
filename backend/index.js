@@ -6,10 +6,12 @@ const rootRouter = require("./routes/index");
 
 const app = express();
 
+// Configure CORS to allow requests from frontend
 app.use(cors({
-  origin: '*',
+  origin: true, // Reflect the request origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
 app.use(express.json());
