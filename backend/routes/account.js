@@ -94,7 +94,9 @@ router.post("/transfer", authMiddleware, async (req, res) => {
         });
     } catch (error) {
         console.error('Transfer error:', error);
-        await session.abortTransaction();
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
         res.status(500).json({
             message: "Transfer failed due to server error"
         });
