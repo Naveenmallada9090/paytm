@@ -37,9 +37,10 @@ router.post("/transfer", authMiddleware, async (req, res) => {
     }
 
     const { amount, to } = req.body;
-    const session = await mongoose.startSession();
+    let session;
 
     try {
+        session = await mongoose.startSession();
         const account = await Account.findOne({ userId: req.userId });
 
         if (!account || account.balance < amount) {
@@ -93,14 +94,16 @@ router.post("/transfer", authMiddleware, async (req, res) => {
         });
     } catch (error) {
         console.error('Transfer error:', error);
-        if (session.inTransaction()) {
+        if (session && session.inTransaction()) {
             await session.abortTransaction();
         }
         res.status(500).json({
             message: "Transfer failed due to server error"
         });
     } finally {
-        session.endSession();
+        if (session) {
+            session.endSession();
+        }
     }
 });
 
