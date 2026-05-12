@@ -10,7 +10,7 @@ export const Dashboard = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get("https://paytm-1-wh6a.onrender.com/api/v1/account/balance", {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/v1/account/balance`, {
             headers: {
                 Authorization: "Bearer " + localStorage.getItem("token")
             }
