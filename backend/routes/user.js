@@ -22,37 +22,45 @@ router.post("/signup", async (req, res) => {
         })
     }
 
-    const existingUser = await User.findOne({
-        username: req.body.username
-    })
-
-    if (existingUser) {
-        return res.status(411).json({
-            message: "Email already taken"
+    try {
+        const existingUser = await User.findOne({
+            $or: [{ username: req.body.username }, { email: req.body.username }]
         })
+
+        if (existingUser) {
+            return res.status(411).json({
+                message: "Username/Email already taken"
+            })
+        }
+
+        const user = await User.create({
+            username: req.body.username,
+            email: req.body.username,
+            password: req.body.password,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+        })
+        const userId = user._id;
+
+        await Account.create({
+            userId,
+            balance: 10000
+        })
+
+        const token = jwt.sign({
+            userId
+        }, JWT_SECRET);
+
+        res.json({
+            message: "User created successfully",
+            token: token
+        })
+    } catch (error) {
+        console.error("Signup error:", error);
+        res.status(500).json({
+            message: "Internal server error during signup"
+        });
     }
-
-    const user = await User.create({
-        username: req.body.username,
-        password: req.body.password,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-    })
-    const userId = user._id;
-
-    await Account.create({
-        userId,
-        balance: 10000
-    })
-
-    const token = jwt.sign({
-        userId
-    }, JWT_SECRET);
-
-    res.json({
-        message: "User created successfully",
-        token: token
-    })
 })
 
 
@@ -100,18 +108,25 @@ const updateBody = zod.object({
 router.put("/", authMiddleware, async (req, res) => {
     const { success } = updateBody.safeParse(req.body)
     if (!success) {
-        res.status(411).json({
+        return res.status(411).json({
             message: "Error while updating information"
         })
     }
 
-    await User.updateOne(req.body, {
-        id: req.userId
-    })
-
-    res.json({
-        message: "Updated successfully"
-    })
+    try {
+        await User.updateOne(
+            { _id: req.userId },
+            { $set: req.body }
+        )
+        res.json({
+            message: "Updated successfully"
+        })
+    } catch (error) {
+        console.error("Update error:", error);
+        res.status(500).json({
+            message: "Internal server error while updating"
+        });
+    }
 })
 
 router.get("/bulk", async (req, res) => {
