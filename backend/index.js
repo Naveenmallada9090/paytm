@@ -6,13 +6,8 @@ const rootRouter = require("./routes/index");
 
 const app = express();
 
-// Simple CORS configuration that works in most environments
-app.use(cors({
-  origin: true,  // Reflect the request origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+// Allow all origins
+app.use(cors());
 
 app.use(express.json());
 
