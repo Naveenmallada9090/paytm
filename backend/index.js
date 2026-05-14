@@ -6,9 +6,24 @@ const rootRouter = require("./routes/index");
 
 const app = express();
 
-// Allow only local frontend origin in development
-const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
-app.use(cors({ origin: allowedOrigin }));
+// CORS: allow localhost (dev) and production frontend (Vercel)
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://paytm-kd73.vercel.app'
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    // allow requests with no origin (like mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 app.use(express.json());
 
