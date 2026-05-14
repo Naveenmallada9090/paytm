@@ -1,4 +1,4 @@
-# Paytm Clone
+# Paytm 
 
 A full-stack payment application clone implementing user authentication and money transfers between accounts.
 
